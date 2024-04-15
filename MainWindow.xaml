@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AMESDanfossHMI"
         mc:Ignorable="d"
-        Title="Worx-2337" Height="400" Width="650" Background="Gray" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowStyle="SingleBorderWindow">
+        Title="Worx-2337" Height="400" Width="650" Background="Gray" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowStyle="SingleBorderWindow" Loaded="Window_Loaded">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -39,7 +39,7 @@
                 <Button x:Name="btnPartRunOut" Content="Run Out" Height="40" Width="100" Margin="2" HorizontalAlignment="Center"/>
             </StackPanel>
             <StackPanel>
-                <Button x:Name="btnManualRotate" Content="Manual Rotate" Height="40" Width="100"  Margin="2" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                <Button x:Name="btnManualRotate" Content="Manual Rotate" Height="40" Width="100"  Margin="2" HorizontalAlignment="Center" VerticalAlignment="Top" Click="btnManualRotate_Click_1"/>
                 <Button x:Name="btnClose" Content="Close" Height="40" Width="100" Margin="2" HorizontalAlignment="Center" VerticalAlignment="Top"/>
             </StackPanel>
             <GroupBox Header="Fumex Filter:" Foreground="White" Height="80" VerticalAlignment="Top" Margin="2">
