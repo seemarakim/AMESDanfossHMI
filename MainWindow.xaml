@@ -1,0 +1,60 @@
+﻿<Window x:Class="AMESDanfossHMI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AMESDanfossHMI"
+        mc:Ignorable="d"
+        Title="Worx-2337" Height="400" Width="650" Background="Gray" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowStyle="SingleBorderWindow">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5,20,5,5">
+            <StackPanel>
+                <GroupBox Header="Sprocket 1 AIM DPM Grade:" Foreground="White" Margin="5,5,5,0">
+                    <Label x:Name="lblBarc1Grade" Content="{Binding Path=Barc1Grade}" Foreground="White" HorizontalAlignment="Center"/>
+                </GroupBox>
+                <GroupBox Header="Sprocket 1:" Margin="5" Width="200" Foreground="White">
+                    <Ellipse x:Name="Sprocket1" Width="80" Height="80" Fill="White"/>
+                </GroupBox>
+            </StackPanel>
+            <StackPanel>
+                <GroupBox Header="Sprocket 2 AIM DPM Grade:" Foreground="White" Margin="5,5,5,0">
+                    <Label x:Name="lblBarc2Grade" Content="{Binding Path=Barc2Grade}" Foreground="White" HorizontalAlignment="Center"/>
+                </GroupBox>
+                <GroupBox Header="Sprocket 2:" Margin="5" Width="200" Foreground="White">
+                    <Ellipse x:Name="Sprocket2" Width="80" Height="80" Fill="White"/>
+                </GroupBox>
+            </StackPanel>
+
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center">
+            <StackPanel>
+                <Button x:Name="btnFumex" Content="Fumex On/Off" Height="40" Width="100" Margin="2" HorizontalAlignment="Center"/>
+                <Button x:Name="btnPartRunOut" Content="Run Out" Height="40" Width="100" Margin="2" HorizontalAlignment="Center"/>
+            </StackPanel>
+            <StackPanel>
+                <Button x:Name="btnManualRotate" Content="Manual Rotate" Height="40" Width="100"  Margin="2" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                <Button x:Name="btnClose" Content="Close" Height="40" Width="100" Margin="2" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+            </StackPanel>
+            <GroupBox Header="Fumex Filter:" Foreground="White" Height="80" VerticalAlignment="Top" Margin="2">
+                <StackPanel>
+                    <Label x:Name="LabelFumexFilterAlarm" Content="OK" Foreground="White" HorizontalAlignment="Center" Background="Green"/>
+                    <Button x:Name="ButtonFumexFilter" Content="Reset" Margin="5">
+                    </Button>
+                </StackPanel>
+            </GroupBox>
+        </StackPanel>
+        <StackPanel  Grid.Row="2" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="150" Margin="10">
+            <GroupBox Header="Barcode Port Select:" Foreground="White" Margin="5">
+                <ComboBox x:Name="comboboxBarcodePorts"/>
+            </GroupBox>
+            <Image Source="Logo2016NoBack.png" Stretch="Uniform"/>
+        </StackPanel>
+    </Grid>
+</Window>
