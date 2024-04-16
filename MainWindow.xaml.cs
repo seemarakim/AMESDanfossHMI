@@ -109,7 +109,7 @@ namespace AMESDanfossHMI
         }
 
    
-        private async void MainTimer_Tick(object sender, object e)
+        private void MainTimer_Tick(object sender, object e)
         {
             try
             {
