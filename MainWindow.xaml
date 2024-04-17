@@ -5,35 +5,16 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AMESDanfossHMI"
         mc:Ignorable="d"
-        Title="Worx-2337" Height="400" Width="650" Background="Gray" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowStyle="SingleBorderWindow" Loaded="Window_Loaded">
+        Title="Worx-2337" Height="200" Width="550" Background="Gray" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowStyle="SingleBorderWindow" Loaded="Window_Loaded">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="200"/>
         </Grid.ColumnDefinitions>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5,20,5,5">
-            <StackPanel>
-                <GroupBox Header="Sprocket 1 AIM DPM Grade:" Foreground="White" Margin="5,5,5,0">
-                    <Label x:Name="lblBarc1Grade" Content="{Binding Path=Barc1Grade}" Foreground="White" HorizontalAlignment="Center"/>
-                </GroupBox>
-                <GroupBox Header="Sprocket 1:" Margin="5" Width="200" Foreground="White">
-                    <Ellipse x:Name="Sprocket1" Width="80" Height="80" Fill="White"/>
-                </GroupBox>
-            </StackPanel>
-            <StackPanel>
-                <GroupBox Header="Sprocket 2 AIM DPM Grade:" Foreground="White" Margin="5,5,5,0">
-                    <Label x:Name="lblBarc2Grade" Content="{Binding Path=Barc2Grade}" Foreground="White" HorizontalAlignment="Center"/>
-                </GroupBox>
-                <GroupBox Header="Sprocket 2:" Margin="5" Width="200" Foreground="White">
-                    <Ellipse x:Name="Sprocket2" Width="80" Height="80" Fill="White"/>
-                </GroupBox>
-            </StackPanel>
-
-        </StackPanel>
-        <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center">
+        <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center">
             <StackPanel>
                 <Button x:Name="btnFumex" Content="Fumex On/Off" Height="40" Width="100" Margin="2" HorizontalAlignment="Center"/>
                 <Button x:Name="btnPartRunOut" Content="Run Out" Height="40" Width="100" Margin="2" HorizontalAlignment="Center"/>
@@ -50,7 +31,7 @@
                 </StackPanel>
             </GroupBox>
         </StackPanel>
-        <StackPanel  Grid.Row="2" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="150" Margin="10">
+        <StackPanel  Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="150" Margin="10">
             <GroupBox Header="Barcode Port Select:" Foreground="White" Margin="5">
                 <ComboBox x:Name="comboboxBarcodePorts"/>
             </GroupBox>
