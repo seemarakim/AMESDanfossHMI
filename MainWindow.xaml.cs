@@ -22,9 +22,6 @@ using System.Windows.Threading;
 
 namespace AMESDanfossHMI
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
 
@@ -32,7 +29,7 @@ namespace AMESDanfossHMI
         public System.IO.Ports.SerialPort BarcPort = new System.IO.Ports.SerialPort();
         private BackgroundWorker bgWorkerComms = new BackgroundWorker();
         private DispatcherTimer MainTimer = new DispatcherTimer();
-        public PLCCLass PLC = new PLCCLass();
+        public PLCIO PLC = new PLCIO();
         private Brush StockColor;   
         public bool bOneShot;
         public string sBarcBuffer;
@@ -65,7 +62,7 @@ namespace AMESDanfossHMI
                     }
                 }
 
-                tcpClient.Connect("192.168.1.5", 250);
+                tcpClient.Connect("10.1.119.15", 250);
                 if (tcpClient.Connected)
                 {
                     bgWorkerComms.DoWork += BgWorkerComms_DoWork;
@@ -88,6 +85,7 @@ namespace AMESDanfossHMI
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
+                Environment.Exit(0);
             }
         }
 
@@ -99,23 +97,55 @@ namespace AMESDanfossHMI
         private void BarcPort_ReceivedData(string val)
         {
             sBarcBuffer += val;
-            if (IsNumeric(sBarcBuffer.Trim()))
-            {
-                PLC.SetRemainingPartsVal = Convert.ToInt32(sBarcBuffer.Trim());
-                PLC.SetRemainingParts = true;
-                sBarcBuffer = "";
-            }
-
         }
+        private void comboboxBarcodePorts_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                if (BarcPort.IsOpen)
+                {
+                    BarcPort.Close();
+                    BarcPort.Dispose();
+                    BarcPort = new SerialPort();
+                }
+                BarcPort.BaudRate = 115200;
+                BarcPort.DataBits = 8;
+                BarcPort.StopBits = StopBits.One;
+                BarcPort.Parity = Parity.Even;
+                BarcPort.PortName = comboboxBarcodePorts.SelectedItem.ToString();
+                BarcPort.Open();
+            }
+            catch (Exception)
+            {
 
-   
+                throw;
+            }
+        }
         private void MainTimer_Tick(object sender, object e)
         {
             try
             {
-                if (PLC.iStart) { btnManualRotate.Background = new SolidColorBrush(Colors.Green); }
-                else { btnManualRotate.Background = StockColor; }
 
+                if (PLC.Input1) 
+                {
+                    btnManualRotateR.Background = Brushes.Green;
+                    btnManualRotateR.IsEnabled = false;
+                }
+                else 
+                { 
+                    btnManualRotateR.Background = StockColor;
+                    btnManualRotateR.IsEnabled = true;
+                }
+                if (PLC.Input2)
+                {
+                    btnManualRotateR2.Background = Brushes.Green;
+                    btnManualRotateR2.IsEnabled = false;
+                }
+                else
+                {
+                    btnManualRotateR2.Background = StockColor;
+                    btnManualRotateR2.IsEnabled = true;
+                }
                 //if (PLC.oManualRotate) { btnManualRotate.Background = new SolidColorBrush(Colors.Green); }
                 //else { btnManualRotate.Background = StockColor; }
 
@@ -178,7 +208,7 @@ namespace AMESDanfossHMI
             //Array.Resize(ref combine, combine.Length + 1);
             //combine[combine.Length - 1] = nDriveNum;
 
-            bool[] outputBool2 = { PLC.oManualRotate, PLC.oPartRunOut, PLC.oFumex, PLC.oCheckClockAck, PLC.oAckPartCount, PLC.oChuteCountTotReset, PLC.PLCConnectHeartbeat, PLC.RedRabbitErrorACK };
+            bool[] outputBool2 = { PLC.Output1, PLC.Output2, PLC.Output3, PLC.Output4, PLC.Output5, PLC.Output6, PLC.Output7, PLC.Output8 };
             byte outputByte2 = 0;
             int index2 = 0;
             foreach (bool b2 in outputBool2)
@@ -191,7 +221,7 @@ namespace AMESDanfossHMI
             Array.Resize(ref combine, combine.Length + 1);
             combine[combine.Length - 1] = outputByte2;
 
-            bool[] outputBool3 = { PLC.RunRedRabbitNotifyACK, PLC.RedRabbitUIOpen, PLC.SetRemainingParts, false, false, false, false, false };
+            bool[] outputBool3 = { PLC.Output9, PLC.Output10, PLC.Output11, PLC.Output12, PLC.Output13, PLC.Output14, PLC.Output15, PLC.Output16 };
             byte outputByte3 = 0;
             int index3 = 0;
             foreach (bool b3 in outputBool3)
@@ -223,213 +253,103 @@ namespace AMESDanfossHMI
                 //OmAxis.iVA = StringToBool(sBinary(3))
 
 
-                PLC.iStart = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(0, 1)));
-                PLC.iEStop = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(9, 1)));
-                PLC.iAutoStop = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(10, 1)));
-                PLC.iRotateAck = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(11, 1)));
-                PLC.Sprocket1 = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(12, 1)));
-                PLC.Sprocket2 = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(13, 1)));
-                PLC.SequenceRunning = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(14, 1)));
-                PLC.RotaryMoving = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(15, 1)));
-                PLC.iCheckClock = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(16, 1)));
-                PLC.iIndexPartCount = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(17, 1)));
-                PLC.iNotifyPartCount = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(18, 1)));
-                PLC.isMarking = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(19, 1)));
-                PLC.iFumexFilter = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(20, 1)));
-                PLC.iFumexRunning = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(21, 1)));
-                PLC.RedRabbitRan = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(22, 1)));
-                PLC.Station1 = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(23, 1)));
-                PLC.Station2 = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(24, 1)));
-                PLC.Station3 = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(25, 1)));
-                PLC.Station4 = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(26, 1)));
-                PLC.Station5 = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(27, 1)));
-                PLC.Station6 = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(28, 1)));
-                PLC.RedRabbitNextStation = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(29, 1)));
-                PLC.RedRabbitError = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(30, 1)));
-                PLC.RunRedRabbitNotify = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(31, 1))); 
+                PLC.Input1 = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(0, 1)));
+                PLC.Input2 = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(1, 1)));
+                PLC.Input3 = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(2, 1)));
+                PLC.Input4 = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(3, 1)));
+                PLC.Input5 = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(4, 1)));
+                PLC.Input6 = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(5, 1)));
+                PLC.Input7 = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(6, 1)));
+                PLC.Input8 = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(7, 1)));
+                PLC.Input9 = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(8, 1)));
+                PLC.Input10 = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(9, 1)));
+                PLC.Input11 = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(10, 1)));
+                PLC.Input12 = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(11, 1)));
+                PLC.Input13 = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(12, 1)));
+                PLC.Input14 = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(13, 1)));
+                PLC.Input15 = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(14, 1)));
+                PLC.Input16 = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(15, 1)));
+                if (PLC.Input1) { PLC.Output1 = false; }
+                if (PLC.Input2) { PLC.Output2 = false; }
+                if (PLC.Input3) { PLC.Output3 = false; }
             }
 
         }
 
-        public class PLCCLass
+        public class PLCIO
         {
-            public bool iStart { get; set; }
-            public bool iEStop { get; set; }
-            public bool iAutoStop { get; set; }
-            public bool iRotateAck { get; set; }
-            public bool oFumex { get; set; }
-            public bool oPartRunOut { get; set; }
-            public bool oManualRotate { get; set; }
-            public bool Sprocket1 { get; set; }
-            public bool Sprocket2 { get; set; }
-            public bool SequenceRunning { get; set; }
-            public bool RotaryMoving { get; set; }
-            public bool iCheckClock { get; set; }
-            public bool oCheckClockAck { get; set; }
-            public bool iIndexPartCount { get; set; }
-            public bool iNotifyPartCount { get; set; }
-            public bool oAckPartCount { get; set; }
-            public bool isMarking { get; set; }
-            public int nRequiredChuteCount { get; set; }
-            public int nChuteCount { get; set; }
-            public Int16 nBarc1Grade { get; set; }
-            public Int16 nBarc2Grade { get; set; }
-            public int nChuteCountTotal { get; set; }
-            public bool oChuteCountTotReset { get; set; }
-            public bool iFumexFilter { get; set; }
-            public bool iFumexRunning { get; set; }
-            public bool Station1 { get; set; }
-            public bool Station2 { get; set; }
-            public bool Station3 { get; set; }
-            public bool Station4 { get; set; }
-            public bool Station5 { get; set; }
-            public bool Station6 { get; set; }
-            public bool RedRabbitRan { get; set; }
-            public bool RedRabbitNextStation { get; set; }
-            public bool RedRabbitError { get; set; }
-            public bool RedRabbitErrorACK { get; set; }
-            public bool PLCConnectHeartbeat { get; set; }
-            public bool RunRedRabbitNotify { get; set; }
-            public bool RunRedRabbitNotifyACK { get; set; }
-            public bool InnerKnurlLzrReady { get; set; }
-            public bool OuterKnurlLzrReady { get; set; }
-            public bool BarcLzrReady { get; set; }
-            public bool StartPB { get; set; }
-            public bool RedRabbitUIOpen { get; set; }
-            public bool SetRemainingParts { get; set; }
-
-            public int SetRemainingPartsVal { get; set; }
-            public bool PLCStartQueued { get; set; }
+            public bool Input1 { get; set; }
+            public bool Input2 { get; set; }
+            public bool Input3 { get; set; }
+            public bool Input4 { get; set; }
+            public bool Input5 { get; set; }
+            public bool Input6 { get; set; }
+            public bool Input7 { get; set; }
+            public bool Input8 { get; set; }
+            public bool Input9 { get; set; }
+            public bool Input10 { get; set; }
+            public bool Input11 { get; set; }
+            public bool Input12 { get; set; }
+            public bool Input13 { get; set; }
+            public bool Input14 { get; set; }
+            public bool Input15 { get; set; }
+            public bool Input16 { get; set; }
+            public bool Output1 { get; set; }
+            public bool Output2 { get; set; }
+            public bool Output3 { get; set; }
+            public bool Output4 { get; set; }
+            public bool Output5 { get; set; }
+            public bool Output6 { get; set; }
+            public bool Output7 { get; set; }
+            public bool Output8 { get; set; }
+            public bool Output9 { get; set; }
+            public bool Output10 { get; set; }
+            public bool Output11 { get; set; }
+            public bool Output12 { get; set; }
+            public bool Output13 { get; set; }
+            public bool Output14 { get; set; }
+            public bool Output15 { get; set; }
+            public bool Output16 { get; set; }
         }
 
         private void btnFumex_Click(object sender, RoutedEventArgs e)
         {
-            if (PLC.oFumex)
-            {
-                PLC.oFumex = false;
-            }
-            else
-            {
-                PLC.oFumex = true;
-            }
+        
         }
 
         private void btnPartRunOut_Click(object sender, RoutedEventArgs e)
         {
-            if (PLC.oPartRunOut)
-            {
-                PLC.oPartRunOut = false;
-            }
-            else
-            {
-                PLC.oPartRunOut = true;
-            }
-        }
-
-        private void btnManualRotate_Click(object sender, RoutedEventArgs e)
-        {
-            if (PLC.oManualRotate)
-            {
-                PLC.oManualRotate = false;
-                //btnManualRotate.Background = StockColor;
-            }
-            else
-            {
-                PLC.oManualRotate = true;
-                //btnManualRotate.Background = new SolidColorBrush(Colors.Green);
-            }
-        }
-
-        private void btnClose_Click(object sender, RoutedEventArgs e)
-        {
-            Environment.Exit(0);
+       
         }
 
         public bool IsNumeric(string value)
         {
             return value.All(char.IsNumber);
         }
-        private void btnResetPart_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                //if (Keyboard.IsKeyDown(Key.LeftCtrl))
-                //{
-                //    string sInput = Microsoft.VisualBasic.Interaction.InputBox("Set Counter Value:", "Manual Counter Set");
-                //    if(sInput != "")
-                //    {
-                //        if (IsNumeric(sInput))
-                //        {
-                //            setti.PartFailCount = Convert.ToInt32(sInput);
-                //        }
-                //        else
-                //        {
-                //            MessageBox.Show("Value Non Numeric");
-                //        }
-                //    }
-                //}
-                //else
-                //{
-                //    setti.PartFailCount = 0;
-                //}
-                PLC.oChuteCountTotReset = true;
-
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
-
 
         private void ButtonFumexFilter_Click(object sender, RoutedEventArgs e)
         {
 
         }
-
-        private void comboboxBarcodePorts_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        
+        private void btnManualRotateR_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                if (BarcPort.IsOpen)
-                {
-                    BarcPort.Close();
-                    BarcPort.Dispose();
-                    BarcPort = new SerialPort();
-                }
-                BarcPort.BaudRate = 115200;
-                BarcPort.DataBits = 8;
-                BarcPort.StopBits = StopBits.One;
-                BarcPort.Parity = Parity.Even;
-                BarcPort.PortName = comboboxBarcodePorts.SelectedItem.ToString();
-                BarcPort.Open();
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
+            if (!PLC.Output1) { PLC.Output1 = true; }
         }
 
-     
-
-        private void comboboxFixtureSelect_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void btnManualRotateR2_Click(object sender, RoutedEventArgs e)
         {
-
+            if (!PLC.Output2) { PLC.Output2 = true; }
         }
 
-        private void btnManualRotate_Click_1(object sender, RoutedEventArgs e)
+        private void btnClose_Click_1(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                if (PLC.oManualRotate) { PLC.oManualRotate = false; }
-                else { PLC.oManualRotate = true;}
-            }
-            catch (Exception)
-            {
+            Environment.Exit(0);
+        }
 
-                throw;
-            }
+        private void btnTamper_Click(object sender, RoutedEventArgs e)
+        {
+            if (!PLC.Output3) { PLC.Output3 = true; }
         }
     }
 }
