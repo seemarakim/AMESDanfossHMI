@@ -5,40 +5,52 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AMESDanfossHMI"
         mc:Ignorable="d"
-        Title="Worx-2337" Height="200" Width="550" Background="Gray" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowStyle="SingleBorderWindow" Loaded="Window_Loaded">
+        Title="Worx-2337" Height="250" Width="600" Background="Gray" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowStyle="SingleBorderWindow" Loaded="Window_Loaded">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="180"/>
         </Grid.ColumnDefinitions>
         <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center">
             <StackPanel>
-                <Button x:Name="btnFumex" Content="Fumex On/Off" Height="40" Width="100" Margin="2" HorizontalAlignment="Center"/>
+                <Button x:Name="btnFumex" Content="Fumex On/Off" Height="40" Width="100" Margin="2" HorizontalAlignment="Center" Click="btnFumex_Click_1"/>
                 <Button x:Name="btnPartRunOut" Content="Run Out" Height="40" Width="100" Margin="2" HorizontalAlignment="Center"/>
                 <Button x:Name="btnTamper" Content="Run Tamper" Height="40" Width="100" Margin="2" HorizontalAlignment="Center" Click="btnTamper_Click"/>
+                <Button x:Name="btnRoboInfeed" Content="Run Infeed" Height="40" Width="100" Margin="2" HorizontalAlignment="Center" Click="btnRoboInfeed_Click"/>
             </StackPanel>
             <StackPanel>
                 <Button x:Name="btnManualRotateR" Content="Manual Rotate Outfeed" Height="40" Width="140" Margin="2" HorizontalAlignment="Center" VerticalAlignment="Top" Click="btnManualRotateR_Click"/>
                 <Button x:Name="btnManualRotateR2" Content="Manual Rotate Table" Height="40" Width="140"  Margin="2" HorizontalAlignment="Center" VerticalAlignment="Top" Click="btnManualRotateR2_Click"/>
                 <Button x:Name="btnClose" Content="Close" Height="40" Width="140" Margin="2" HorizontalAlignment="Center" VerticalAlignment="Top" Click="btnClose_Click_1"/>
+                <Button x:Name="btnRoboOutfeed" Content="Run Outfeed" Height="40" Width="140" Margin="2" HorizontalAlignment="Center" Click="btnRoboOutfeed_Click"/>
             </StackPanel>
-            <GroupBox Header="Fumex Filter:" Foreground="White" Height="80" VerticalAlignment="Center" Margin="2">
-                <StackPanel>
-                    <Label x:Name="LabelFumexFilterAlarm" Content="OK" Foreground="White" HorizontalAlignment="Center" Background="Green"/>
-                    <Button x:Name="ButtonFumexFilter" Content="Reset" Margin="5">
-                    </Button>
-                </StackPanel>
-            </GroupBox>
+            <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                <GroupBox Header="Fumex Filter:" Foreground="White" Height="80" VerticalAlignment="Center" Margin="2">
+                    <StackPanel>
+                        <Label x:Name="LabelFumexFilterAlarm" Content="OK" Foreground="White" HorizontalAlignment="Center" Background="Green"/>
+                        <Button x:Name="ButtonFumexFilter" Content="Reset" Margin="5">
+                        </Button>
+                    </StackPanel>
+                </GroupBox>
+                <Button x:Name="btnRoboIdle" Content="Robot IDLE Positon" Height="40" Width="120" Margin="2" HorizontalAlignment="Center" Click="btnRoboIdle_Click"/>
+            </StackPanel>
+            
 
         </StackPanel>
-        <StackPanel  Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="150" Margin="10">
+        <StackPanel  Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Width="150" Margin="2">
             <GroupBox Header="Barcode Port Select:" Foreground="White" Margin="5">
                 <ComboBox x:Name="comboboxBarcodePorts"/>
             </GroupBox>
+            <GroupBox Header="Barcode Scan:" Foreground="White" Margin="5">
+                <TextBox x:Name="txtboxBarcodeScan" />
+            </GroupBox>
             <Image Source="Logo2016NoBack.png" Stretch="Uniform"/>
+            <GroupBox Header="Status:" Foreground="White">
+                <Label x:Name="lblStatus" Content="Status" Foreground="White" HorizontalAlignment="Center"/>
+            </GroupBox>
         </StackPanel>
     </Grid>
 </Window>

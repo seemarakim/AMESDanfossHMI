@@ -146,8 +146,20 @@ namespace AMESDanfossHMI
                     btnManualRotateR2.Background = StockColor;
                     btnManualRotateR2.IsEnabled = true;
                 }
-                //if (PLC.oManualRotate) { btnManualRotate.Background = new SolidColorBrush(Colors.Green); }
-                //else { btnManualRotate.Background = StockColor; }
+                if (PLC.Input3) { btnTamper.IsEnabled = false; }
+                else { btnTamper.IsEnabled= true; }
+                if (PLC.Input4)
+                {
+                    btnRoboInfeed.IsEnabled = false;
+                    btnRoboOutfeed.IsEnabled = false;
+                    btnRoboIdle.IsEnabled = false;
+                }
+                else
+                {
+                    btnRoboInfeed.IsEnabled = true;
+                    btnRoboOutfeed.IsEnabled = true;
+                    btnRoboIdle.IsEnabled = true;
+                }
 
             }
             catch (Exception ex)
@@ -257,7 +269,7 @@ namespace AMESDanfossHMI
                 PLC.Input2 = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(1, 1)));
                 PLC.Input3 = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(2, 1)));
                 PLC.Input4 = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(3, 1)));
-                PLC.Input5 = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(4, 1)));
+                PLC.Input5 = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(4, 1)));//Fumex Running
                 PLC.Input6 = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(5, 1)));
                 PLC.Input7 = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(6, 1)));
                 PLC.Input8 = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(7, 1)));
@@ -269,19 +281,25 @@ namespace AMESDanfossHMI
                 PLC.Input14 = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(13, 1)));
                 PLC.Input15 = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(14, 1)));
                 PLC.Input16 = Convert.ToBoolean(Convert.ToInt32(sBinary.Substring(15, 1)));
-                if (PLC.Input1) { PLC.Output1 = false; }
-                if (PLC.Input2) { PLC.Output2 = false; }
-                if (PLC.Input3) { PLC.Output3 = false; }
+                if (PLC.Input1) { PLC.Output1 = false; } //Outfeed Table Moving Signal
+                if (PLC.Input2) { PLC.Output2 = false; } //Fixture Table Moving Signal
+                if (PLC.Input3) { PLC.Output3 = false; } //Tamper Running Signal
+                if (PLC.Input4) 
+                { 
+                    PLC.Output4 = false;
+                    PLC.Output5 = false;
+                    PLC.Output7 = false;
+                } //Robot Running Signal
             }
 
         }
 
         public class PLCIO
         {
-            public bool Input1 { get; set; }
-            public bool Input2 { get; set; }
-            public bool Input3 { get; set; }
-            public bool Input4 { get; set; }
+            public bool Input1 { get; set; }//Outfeed Table Moving Signal
+            public bool Input2 { get; set; }//Fixture Table Moving Signal
+            public bool Input3 { get; set; }//Tamper Running Signal
+            public bool Input4 { get; set; }//Robot Running Signal
             public bool Input5 { get; set; }
             public bool Input6 { get; set; }
             public bool Input7 { get; set; }
@@ -294,13 +312,13 @@ namespace AMESDanfossHMI
             public bool Input14 { get; set; }
             public bool Input15 { get; set; }
             public bool Input16 { get; set; }
-            public bool Output1 { get; set; }
-            public bool Output2 { get; set; }
-            public bool Output3 { get; set; }
-            public bool Output4 { get; set; }
-            public bool Output5 { get; set; }
-            public bool Output6 { get; set; }
-            public bool Output7 { get; set; }
+            public bool Output1 { get; set; }//Rotate Outfeed Table
+            public bool Output2 { get; set; }//Rotate Fixture Table
+            public bool Output3 { get; set; }//Run Tamper
+            public bool Output4 { get; set; }//Trigger Robot Infeed 
+            public bool Output5 { get; set; }//Trigger Robot Outfeed
+            public bool Output6 { get; set; }//Fumex
+            public bool Output7 { get; set; }//Robot IDLE Position
             public bool Output8 { get; set; }
             public bool Output9 { get; set; }
             public bool Output10 { get; set; }
@@ -350,6 +368,27 @@ namespace AMESDanfossHMI
         private void btnTamper_Click(object sender, RoutedEventArgs e)
         {
             if (!PLC.Output3) { PLC.Output3 = true; }
+        }
+
+        private void btnRoboInfeed_Click(object sender, RoutedEventArgs e)
+        {
+            if (!PLC.Output4) { PLC.Output4 = true; }
+        }
+
+        private void btnRoboOutfeed_Click(object sender, RoutedEventArgs e)
+        {
+            if (!PLC.Output5) { PLC.Output5 = true; }
+        }
+
+        private void btnFumex_Click_1(object sender, RoutedEventArgs e)
+        {
+            if (PLC.Output6) { PLC.Output6 = false; }
+            else { PLC.Output6 = true; }
+        }
+
+        private void btnRoboIdle_Click(object sender, RoutedEventArgs e)
+        {
+            if (!PLC.Output7) {  PLC.Output7 = true; }
         }
     }
 }
