@@ -42,7 +42,7 @@
         </StackPanel>
         <StackPanel  Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Width="150" Margin="2">
             <GroupBox Header="Barcode Port Select:" Foreground="White" Margin="5">
-                <ComboBox x:Name="comboboxBarcodePorts"/>
+                <ComboBox x:Name="comboboxBarcodePorts" SelectionChanged="comboboxBarcodePorts_SelectionChanged_1"/>
             </GroupBox>
             <GroupBox Header="Barcode Scan:" Foreground="White" Margin="5">
                 <TextBox x:Name="txtboxBarcodeScan" />

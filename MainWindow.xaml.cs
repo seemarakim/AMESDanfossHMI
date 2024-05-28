@@ -1,7 +1,10 @@
-﻿using Microsoft.VisualBasic;
+﻿using AMESDanfossHMI.Properties;
+using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Ports;
 using System.Linq;
@@ -19,6 +22,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace AMESDanfossHMI
 {
@@ -33,6 +37,8 @@ namespace AMESDanfossHMI
         private Brush StockColor;   
         public bool bOneShot;
         public string sBarcBuffer;
+        public string[] sBarcVal;
+        int bytestoread;
         public MainWindow()
         {
             InitializeComponent();
@@ -89,16 +95,78 @@ namespace AMESDanfossHMI
             }
         }
 
+        private void BarcPort_PinChanged(object sender, SerialPinChangedEventArgs e)
+        {
+            MessageBox.Show("Pin Changed");
+        }
+        int barcIndex;
         private void BarcPort_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
         {
+            //sBarcBuffer = "";
+            
             BarcPort_ReceivedData(BarcPort.ReadExisting());
         }
 
         private void BarcPort_ReceivedData(string val)
         {
-            sBarcBuffer += val;
+            
+                
+                sBarcBuffer = sBarcBuffer + val;
+           
+            
+            //if (sBarcBuffer.EndsWith("\r") || sBarcBuffer.EndsWith("\n"))
+            //{
+                //sBarcBuffer = sBarcBuffer.Substring(0, sBarcBuffer.Length - 1);
+                //if (sBarcVal != null) { Array.Clear(sBarcVal, 0, sBarcVal.Length); }
+                //sBarcVal = Strings.Split(sBarcBuffer, ",");
+                //sBarcBuffer = "";
+                //sBarcVal = Barc1Data;
+                //foreach (string item in Barc1DataArray)
+                //{
+                //    if (item == "ERROR") { MessageBox.Show("Data Error"); break; }
+                //}
+                //if (Settings.BarcSequenceSelect)
+                //{
+                //    if (Settings.BarcDatabase)
+                //    {
+                //        DataRow sBarcCheck = BarcDB.Select("Barcode = '" + BarcodeValue + "'").FirstOrDefault();
+                //        if (sBarcCheck != null)
+                //        {
+                //            Application.Current.Dispatcher.BeginInvoke(new Action(() => dt.Clear()));
+                //            string barcpathseq = sSeqPath + sBarcCheck.ItemArray[1] + ".XML";
+                //            if (System.IO.File.Exists(barcpathseq))
+                //            {
+                //                Application.Current.Dispatcher.BeginInvoke(new Action(() => dt.ReadXml(barcpathseq)));
+                //            }
+                //            else { MessageBox.Show("Sequence Not Found"); }
+                //            Settings.aplication._sCurrentSeq = sSeqPath + sBarcCheck.ItemArray[1] + ".XML";
+                //            CurrentSeq = "Current Seq: " + "\"" + Settings.aplication._sCurrentSeq + "\"";
+
+                //        }
+                //        else
+                //        {
+                //            MessageBox.Show("Sequence Not Found in Database");
+                //        }
+                //    }
+                //    else
+                //    {
+                //        foreach (string sequence in Directory.GetFiles(sSeqPath))
+                //        {
+                //            if (sequence.Contains(BarcodeValue))
+                //            {
+                //                Application.Current.Dispatcher.BeginInvoke(new Action(() => dt.Clear()));
+                //                Application.Current.Dispatcher.BeginInvoke(new Action(() => dt.ReadXml(sequence)));
+                //                Settings.aplication._sCurrentSeq = sequence;
+                //                CurrentSeq = "Current Seq: " + "\"" + Settings.aplication._sCurrentSeq + "\"";
+                //                break;
+                //            }
+                //        }
+                //    }
+                //}
+            //}
+            //bBarcodeScanned = true;
         }
-        private void comboboxBarcodePorts_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void comboboxBarcodePorts_SelectionChanged_1(object sender, SelectionChangedEventArgs e)
         {
             try
             {
@@ -108,10 +176,10 @@ namespace AMESDanfossHMI
                     BarcPort.Dispose();
                     BarcPort = new SerialPort();
                 }
-                BarcPort.BaudRate = 115200;
+                BarcPort.BaudRate = 9600;
                 BarcPort.DataBits = 8;
                 BarcPort.StopBits = StopBits.One;
-                BarcPort.Parity = Parity.Even;
+                BarcPort.Parity = Parity.None;
                 BarcPort.PortName = comboboxBarcodePorts.SelectedItem.ToString();
                 BarcPort.Open();
             }
@@ -125,7 +193,15 @@ namespace AMESDanfossHMI
         {
             try
             {
-
+                if(sBarcBuffer != "")
+                {
+                   // txtboxBarcodeScan.Text = sBarcBuffer;
+                }
+                if (BarcPort.IsOpen & sBarcBuffer != "")
+                {
+                    txtboxBarcodeScan.Text = sBarcBuffer;
+                }
+                
                 if (PLC.Input1) 
                 {
                     btnManualRotateR.Background = Brushes.Green;
@@ -246,6 +322,16 @@ namespace AMESDanfossHMI
             Array.Resize(ref combine, combine.Length + 1);
             combine[combine.Length - 1] = outputByte3;
 
+            if (sBarcBuffer  != null)
+            {
+                result = null;
+                result = BitConverter.GetBytes(sBarcBuffer.Length);
+                combine = combine.Concat(result).ToArray();
+
+                result = null;
+                result = Encoding.ASCII.GetBytes(sBarcBuffer);
+                combine = combine.Concat(result).ToArray();
+            }
 
 
             //RECIEVE==========================================================================================================================================
@@ -390,5 +476,7 @@ namespace AMESDanfossHMI
         {
             if (!PLC.Output7) {  PLC.Output7 = true; }
         }
+
+
     }
 }
