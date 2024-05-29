@@ -33,6 +33,7 @@ namespace AMESDanfossHMI
         public System.IO.Ports.SerialPort BarcPort = new System.IO.Ports.SerialPort();
         private BackgroundWorker bgWorkerComms = new BackgroundWorker();
         private DispatcherTimer MainTimer = new DispatcherTimer();
+        private Stopwatch swAlarms = new Stopwatch();
         public PLCIO PLC = new PLCIO();
         private Brush StockColor;   
         public bool bOneShot;
@@ -54,6 +55,7 @@ namespace AMESDanfossHMI
                 MainTimer.Interval = TimeSpan.FromMilliseconds(2);
                 MainTimer.Start();    
                 BarcPort.DataReceived += BarcPort_DataReceived;
+                swBarc.Start();
                 //lblPartFailCount.DataContext = setti;
                 //lblChuteCount.DataContext = setti;
                 //lblReqChuteCount.DataContext = setti;
@@ -95,15 +97,15 @@ namespace AMESDanfossHMI
             }
         }
 
-        private void BarcPort_PinChanged(object sender, SerialPinChangedEventArgs e)
-        {
-            MessageBox.Show("Pin Changed");
-        }
-        int barcIndex;
+        bool barcONS;
+        Stopwatch swBarc = new Stopwatch();
         private void BarcPort_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
         {
-            //sBarcBuffer = "";
-            
+            if (swBarc.ElapsedMilliseconds > 100) 
+            {
+                sBarcBuffer = "";
+                swBarc.Restart();
+            }
             BarcPort_ReceivedData(BarcPort.ReadExisting());
         }
 
@@ -236,6 +238,9 @@ namespace AMESDanfossHMI
                     btnRoboOutfeed.IsEnabled = true;
                     btnRoboIdle.IsEnabled = true;
                 }
+                if (PLC.Output8) { btnPartRunOut.Background = Brushes.Green; }
+                else { btnPartRunOut.Background = StockColor; }
+
 
             }
             catch (Exception ex)
@@ -386,14 +391,14 @@ namespace AMESDanfossHMI
             public bool Input2 { get; set; }//Fixture Table Moving Signal
             public bool Input3 { get; set; }//Tamper Running Signal
             public bool Input4 { get; set; }//Robot Running Signal
-            public bool Input5 { get; set; }
-            public bool Input6 { get; set; }
-            public bool Input7 { get; set; }
-            public bool Input8 { get; set; }
-            public bool Input9 { get; set; }
-            public bool Input10 { get; set; }
-            public bool Input11 { get; set; }
-            public bool Input12 { get; set; }
+            public bool Input5 { get; set; }//AutoStop
+            public bool Input6 { get; set; }//E-Stop
+            public bool Input7 { get; set; }//Cylinder Error
+            public bool Input8 { get; set; }//Tamper Error
+            public bool Input9 { get; set; }//Index Table Error
+            public bool Input10 { get; set; }//Outfeed Table Error
+            public bool Input11 { get; set; }//Robot Error
+            public bool Input12 { get; set; }//Laser Error
             public bool Input13 { get; set; }
             public bool Input14 { get; set; }
             public bool Input15 { get; set; }
@@ -405,7 +410,7 @@ namespace AMESDanfossHMI
             public bool Output5 { get; set; }//Trigger Robot Outfeed
             public bool Output6 { get; set; }//Fumex
             public bool Output7 { get; set; }//Robot IDLE Position
-            public bool Output8 { get; set; }
+            public bool Output8 { get; set; }//Run Out
             public bool Output9 { get; set; }
             public bool Output10 { get; set; }
             public bool Output11 { get; set; }
@@ -421,10 +426,6 @@ namespace AMESDanfossHMI
         
         }
 
-        private void btnPartRunOut_Click(object sender, RoutedEventArgs e)
-        {
-       
-        }
 
         public bool IsNumeric(string value)
         {
@@ -477,6 +478,10 @@ namespace AMESDanfossHMI
             if (!PLC.Output7) {  PLC.Output7 = true; }
         }
 
-
+        private void btnPartRunOut_Click_1(object sender, RoutedEventArgs e)
+        {
+            if (!PLC.Output8) { PLC.Output8=true; }
+            else { PLC.Output8=false; }
+        }
     }
 }
