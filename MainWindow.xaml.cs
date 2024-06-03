@@ -11,6 +11,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Runtime;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -39,7 +40,11 @@ namespace AMESDanfossHMI
         public bool bOneShot;
         public string sBarcBuffer;
         public string[] sBarcVal;
-        int bytestoread;
+        Stopwatch swBarc = new Stopwatch();
+        public bool[] AlarmArr = new bool[20];
+        public string AlarmBuff;
+        public bool DONTUPDATE;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -56,6 +61,7 @@ namespace AMESDanfossHMI
                 MainTimer.Start();    
                 BarcPort.DataReceived += BarcPort_DataReceived;
                 swBarc.Start();
+                //swAlarms.Start();
                 //lblPartFailCount.DataContext = setti;
                 //lblChuteCount.DataContext = setti;
                 //lblReqChuteCount.DataContext = setti;
@@ -97,8 +103,7 @@ namespace AMESDanfossHMI
             }
         }
 
-        bool barcONS;
-        Stopwatch swBarc = new Stopwatch();
+
         private void BarcPort_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
         {
             if (swBarc.ElapsedMilliseconds > 100) 
@@ -110,63 +115,8 @@ namespace AMESDanfossHMI
         }
 
         private void BarcPort_ReceivedData(string val)
-        {
-            
-                
+        {        
                 sBarcBuffer = sBarcBuffer + val;
-           
-            
-            //if (sBarcBuffer.EndsWith("\r") || sBarcBuffer.EndsWith("\n"))
-            //{
-                //sBarcBuffer = sBarcBuffer.Substring(0, sBarcBuffer.Length - 1);
-                //if (sBarcVal != null) { Array.Clear(sBarcVal, 0, sBarcVal.Length); }
-                //sBarcVal = Strings.Split(sBarcBuffer, ",");
-                //sBarcBuffer = "";
-                //sBarcVal = Barc1Data;
-                //foreach (string item in Barc1DataArray)
-                //{
-                //    if (item == "ERROR") { MessageBox.Show("Data Error"); break; }
-                //}
-                //if (Settings.BarcSequenceSelect)
-                //{
-                //    if (Settings.BarcDatabase)
-                //    {
-                //        DataRow sBarcCheck = BarcDB.Select("Barcode = '" + BarcodeValue + "'").FirstOrDefault();
-                //        if (sBarcCheck != null)
-                //        {
-                //            Application.Current.Dispatcher.BeginInvoke(new Action(() => dt.Clear()));
-                //            string barcpathseq = sSeqPath + sBarcCheck.ItemArray[1] + ".XML";
-                //            if (System.IO.File.Exists(barcpathseq))
-                //            {
-                //                Application.Current.Dispatcher.BeginInvoke(new Action(() => dt.ReadXml(barcpathseq)));
-                //            }
-                //            else { MessageBox.Show("Sequence Not Found"); }
-                //            Settings.aplication._sCurrentSeq = sSeqPath + sBarcCheck.ItemArray[1] + ".XML";
-                //            CurrentSeq = "Current Seq: " + "\"" + Settings.aplication._sCurrentSeq + "\"";
-
-                //        }
-                //        else
-                //        {
-                //            MessageBox.Show("Sequence Not Found in Database");
-                //        }
-                //    }
-                //    else
-                //    {
-                //        foreach (string sequence in Directory.GetFiles(sSeqPath))
-                //        {
-                //            if (sequence.Contains(BarcodeValue))
-                //            {
-                //                Application.Current.Dispatcher.BeginInvoke(new Action(() => dt.Clear()));
-                //                Application.Current.Dispatcher.BeginInvoke(new Action(() => dt.ReadXml(sequence)));
-                //                Settings.aplication._sCurrentSeq = sequence;
-                //                CurrentSeq = "Current Seq: " + "\"" + Settings.aplication._sCurrentSeq + "\"";
-                //                break;
-                //            }
-                //        }
-                //    }
-                //}
-            //}
-            //bBarcodeScanned = true;
         }
         private void comboboxBarcodePorts_SelectionChanged_1(object sender, SelectionChangedEventArgs e)
         {
@@ -185,25 +135,22 @@ namespace AMESDanfossHMI
                 BarcPort.PortName = comboboxBarcodePorts.SelectedItem.ToString();
                 BarcPort.Open();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                MessageBox.Show(ex.Message);
             }
         }
         private void MainTimer_Tick(object sender, object e)
         {
             try
             {
-                if(sBarcBuffer != "")
-                {
-                   // txtboxBarcodeScan.Text = sBarcBuffer;
-                }
                 if (BarcPort.IsOpen & sBarcBuffer != "")
                 {
                     txtboxBarcodeScan.Text = sBarcBuffer;
                 }
-                
+                //txtboxBarcodeScan.Text = swAlarms.ElapsedMilliseconds.ToString();//swAlarms.ElapsedMilliseconds.ToString();
+
+
                 if (PLC.Input1) 
                 {
                     btnManualRotateR.Background = Brushes.Green;
@@ -240,6 +187,63 @@ namespace AMESDanfossHMI
                 }
                 if (PLC.Output8) { btnPartRunOut.Background = Brushes.Green; }
                 else { btnPartRunOut.Background = StockColor; }
+
+                //txtboxBarcodeScan.Text = swAlarms.ElapsedMilliseconds.ToString() + ", " + i;
+                if (lblStatus.Content.ToString() == AlarmBuff & swAlarms.ElapsedMilliseconds > 2000)
+                {
+                    DONTUPDATE = false;
+                    swAlarms.Restart();
+                }
+
+                if (!PLC.Input5)
+                {
+                    lblStatus.Content = "AutoStop";
+                }
+                if (!PLC.Input6)
+                {
+                    lblStatus.Content = "E-Stop";
+                }
+                if (!PLC.Input7)
+                {
+                    lblStatus.Content = "Check Air Pressure";
+                    DONTUPDATE = true;
+                    AlarmBuff = "Check Air Pressure";
+                }
+                if (PLC.Input9)
+                {
+                    lblStatus.Content = "Cylinder Error";
+                }
+                if (PLC.Input10)
+                {
+                    lblStatus.Content = "Weber Label Error";
+                    DONTUPDATE = true;
+                    AlarmBuff = "Weber Label Error";
+                }
+                if (PLC.Input11)
+                {
+                    lblStatus.Content = "Indexer Table Error";
+                }
+                if (PLC.Input12)
+                {
+                    lblStatus.Content = "Rotary Table Error";
+                }
+                if (PLC.Input13)
+                {
+                    lblStatus.Content = "Robot Error";
+                    DONTUPDATE = true;
+                    AlarmBuff = "Robot Error";
+                }
+                if (PLC.Input14)
+                {
+                    lblStatus.Content = "Laser Error";
+                    DONTUPDATE = true;
+                    AlarmBuff = "Laser Error";
+                }
+                if (PLC.Input15)
+                {
+                    lblStatus.Content = "Fumex Filter Change";
+                }
+
 
 
             }
@@ -381,10 +385,25 @@ namespace AMESDanfossHMI
                     PLC.Output5 = false;
                     PLC.Output7 = false;
                 } //Robot Running Signal
+                AlarmArr[5] = !PLC.Input5;
+                AlarmArr[6] = !PLC.Input6;
+                AlarmArr[7] = !PLC.Input7;
+                AlarmArr[8] = PLC.Input8;
+                AlarmArr[9] = PLC.Input9;
+                AlarmArr[10] = PLC.Input10;
+                AlarmArr[11] = PLC.Input11;
+                AlarmArr[12] = PLC.Input12;
+                AlarmArr[13] = PLC.Input13;
+                AlarmArr[14] = PLC.Input14;
+                AlarmArr[15] = PLC.Input15;
+                //nAlarmCount = CalculateValues(true);
             }
 
         }
-
+        int CalculateValues(bool val)
+        {
+            return AlarmArr.Count(c => c == val);
+        }
         public class PLCIO
         {
             public bool Input1 { get; set; }//Outfeed Table Moving Signal
@@ -393,15 +412,15 @@ namespace AMESDanfossHMI
             public bool Input4 { get; set; }//Robot Running Signal
             public bool Input5 { get; set; }//AutoStop
             public bool Input6 { get; set; }//E-Stop
-            public bool Input7 { get; set; }//Cylinder Error
-            public bool Input8 { get; set; }//Tamper Error
-            public bool Input9 { get; set; }//Index Table Error
-            public bool Input10 { get; set; }//Outfeed Table Error
-            public bool Input11 { get; set; }//Robot Error
-            public bool Input12 { get; set; }//Laser Error
-            public bool Input13 { get; set; }
-            public bool Input14 { get; set; }
-            public bool Input15 { get; set; }
+            public bool Input7 { get; set; }//Air Pressure Good
+            public bool Input8 { get; set; }//Fumex Running
+            public bool Input9 { get; set; }//Cylinder Error
+            public bool Input10 { get; set; }//Tamper Error
+            public bool Input11 { get; set; }//Index Table Error
+            public bool Input12 { get; set; }//Outfeed Table Error
+            public bool Input13 { get; set; }//Robot Error
+            public bool Input14 { get; set; }//Laser Error
+            public bool Input15 { get; set; }//Fumex Filter Change
             public bool Input16 { get; set; }
             public bool Output1 { get; set; }//Rotate Outfeed Table
             public bool Output2 { get; set; }//Rotate Fixture Table
