@@ -41,9 +41,7 @@ namespace AMESDanfossHMI
         public string sBarcBuffer;
         public string[] sBarcVal;
         Stopwatch swBarc = new Stopwatch();
-        public bool[] AlarmArr = new bool[20];
-        public string AlarmBuff;
-        public bool DONTUPDATE;
+        public int nAlarmIndex = 0;
 
         public MainWindow()
         {
@@ -61,7 +59,7 @@ namespace AMESDanfossHMI
                 MainTimer.Start();    
                 BarcPort.DataReceived += BarcPort_DataReceived;
                 swBarc.Start();
-                //swAlarms.Start();
+                swAlarms.Start();
                 //lblPartFailCount.DataContext = setti;
                 //lblChuteCount.DataContext = setti;
                 //lblReqChuteCount.DataContext = setti;
@@ -189,59 +187,82 @@ namespace AMESDanfossHMI
                 else { btnPartRunOut.Background = StockColor; }
 
                 //txtboxBarcodeScan.Text = swAlarms.ElapsedMilliseconds.ToString() + ", " + i;
-                if (lblStatus.Content.ToString() == AlarmBuff & swAlarms.ElapsedMilliseconds > 2000)
+                if (swAlarms.ElapsedMilliseconds > 1800)
                 {
-                    DONTUPDATE = false;
                     swAlarms.Restart();
+                    nAlarmIndex = 0;
+                    lblStatus.Content = "";
                 }
 
-                if (!PLC.Input5)
+                if (!PLC.Input5 & nAlarmIndex == 0 & swAlarms.ElapsedMilliseconds > 1500)
                 {
+                    //1
                     lblStatus.Content = "AutoStop";
+                    nAlarmIndex = 1;
+                    swAlarms.Restart();
                 }
-                if (!PLC.Input6)
+                if (!PLC.Input6 & nAlarmIndex < 2 & swAlarms.ElapsedMilliseconds > 1500)
                 {
+                    //2
                     lblStatus.Content = "E-Stop";
+                    nAlarmIndex = 2;
+                    swAlarms.Restart();
                 }
-                if (!PLC.Input7)
+                if (!PLC.Input7 & nAlarmIndex < 3 & swAlarms.ElapsedMilliseconds > 1500)
                 {
+                    //3
                     lblStatus.Content = "Check Air Pressure";
-                    DONTUPDATE = true;
-                    AlarmBuff = "Check Air Pressure";
+                    nAlarmIndex = 3;
+                    swAlarms.Restart();
                 }
-                if (PLC.Input9)
+                if (PLC.Input9 & nAlarmIndex < 4 & swAlarms.ElapsedMilliseconds > 1500)
                 {
+                    //4
                     lblStatus.Content = "Cylinder Error";
+                    nAlarmIndex = 4;
+                    swAlarms.Restart();
                 }
-                if (PLC.Input10)
+                if (PLC.Input10 & nAlarmIndex < 5 & swAlarms.ElapsedMilliseconds > 1500)
                 {
+                    //5
                     lblStatus.Content = "Weber Label Error";
-                    DONTUPDATE = true;
-                    AlarmBuff = "Weber Label Error";
+                    nAlarmIndex = 5;
+                    swAlarms.Restart();
                 }
-                if (PLC.Input11)
+                if (PLC.Input11 & nAlarmIndex < 6 & swAlarms.ElapsedMilliseconds > 1500)
                 {
+                    //6
                     lblStatus.Content = "Indexer Table Error";
+                    nAlarmIndex = 6;
+                    swAlarms.Restart();
                 }
-                if (PLC.Input12)
+                if (PLC.Input12 & nAlarmIndex < 7 & swAlarms.ElapsedMilliseconds > 1500)
                 {
+                    //7
                     lblStatus.Content = "Rotary Table Error";
+                    nAlarmIndex = 7;
+                    swAlarms.Restart();
                 }
-                if (PLC.Input13)
+                if (PLC.Input13 & nAlarmIndex < 8 & swAlarms.ElapsedMilliseconds > 1500)
                 {
+                    //8
                     lblStatus.Content = "Robot Error";
-                    DONTUPDATE = true;
-                    AlarmBuff = "Robot Error";
+                    nAlarmIndex = 8;
+                    swAlarms.Restart();
                 }
-                if (PLC.Input14)
+                if (PLC.Input14 & nAlarmIndex < 9 & swAlarms.ElapsedMilliseconds > 1500)
                 {
+                    //9
                     lblStatus.Content = "Laser Error";
-                    DONTUPDATE = true;
-                    AlarmBuff = "Laser Error";
+                    nAlarmIndex = 9;
+                    swAlarms.Restart();
                 }
-                if (PLC.Input15)
+                if (PLC.Input15 & nAlarmIndex < 10 & swAlarms.ElapsedMilliseconds > 1500)
                 {
+                    //10
                     lblStatus.Content = "Fumex Filter Change";
+                    nAlarmIndex = 10;
+                    swAlarms.Restart();
                 }
 
 
@@ -385,25 +406,25 @@ namespace AMESDanfossHMI
                     PLC.Output5 = false;
                     PLC.Output7 = false;
                 } //Robot Running Signal
-                AlarmArr[5] = !PLC.Input5;
-                AlarmArr[6] = !PLC.Input6;
-                AlarmArr[7] = !PLC.Input7;
-                AlarmArr[8] = PLC.Input8;
-                AlarmArr[9] = PLC.Input9;
-                AlarmArr[10] = PLC.Input10;
-                AlarmArr[11] = PLC.Input11;
-                AlarmArr[12] = PLC.Input12;
-                AlarmArr[13] = PLC.Input13;
-                AlarmArr[14] = PLC.Input14;
-                AlarmArr[15] = PLC.Input15;
+                //AlarmArr[5] = !PLC.Input5;
+                //AlarmArr[6] = !PLC.Input6;
+                //AlarmArr[7] = !PLC.Input7;
+                //AlarmArr[8] = PLC.Input8;
+                //AlarmArr[9] = PLC.Input9;
+                //AlarmArr[10] = PLC.Input10;
+                //AlarmArr[11] = PLC.Input11;
+                //AlarmArr[12] = PLC.Input12;
+                //AlarmArr[13] = PLC.Input13;
+                //AlarmArr[14] = PLC.Input14;
+                //AlarmArr[15] = PLC.Input15;
                 //nAlarmCount = CalculateValues(true);
             }
 
         }
-        int CalculateValues(bool val)
-        {
-            return AlarmArr.Count(c => c == val);
-        }
+        //int CalculateValues(bool val)
+        //{
+        //    //return AlarmArr.Count(c => c == val);
+        //}
         public class PLCIO
         {
             public bool Input1 { get; set; }//Outfeed Table Moving Signal
