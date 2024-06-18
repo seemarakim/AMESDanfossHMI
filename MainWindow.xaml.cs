@@ -89,7 +89,7 @@ namespace AMESDanfossHMI
                 else
                 {
                     Worx2337.WindowState = WindowState.Normal;
-                    Worx2337.Visibility = Visibility.Visible;
+                    //Worx2337.Visibility = Visibility.Visible;
                     Worx2337.Activate();
                     MessageBox.Show("PLC Connection Failed");
                     Environment.Exit(0);
@@ -105,7 +105,7 @@ namespace AMESDanfossHMI
             catch (Exception ex)
             {
                 Worx2337.WindowState = WindowState.Normal;
-                Worx2337.Visibility = Visibility.Visible;
+                //Worx2337.Visibility = Visibility.Visible;
                 Worx2337.Activate();
                 MessageBox.Show(ex.Message);
                 Environment.Exit(0);

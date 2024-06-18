@@ -100,9 +100,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Logo2016NoBack.png" />
-  </ItemGroup>
-  <ItemGroup>
     <COMReference Include="Microsoft.Office.Core">
       <Guid>{2DF8D04C-5BFA-101B-BDE5-00AA0044DE52}</Guid>
       <VersionMajor>2</VersionMajor>
@@ -115,6 +112,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\KEyView.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Images\White Back.PNG" />
   </ItemGroup>
   <ItemGroup>
     <SplashScreen Include="Images\Logo2016NoBack.png" />
