@@ -80,7 +80,7 @@ namespace AMESDanfossHMI
                     }
                 }
 
-                tcpClient.Connect("10.1.119.15", 250);
+                tcpClient.Connect("10.1.100.29", 250);
                 if (tcpClient.Connected)
                 {
                     bgWorkerComms.DoWork += BgWorkerComms_DoWork;
@@ -204,6 +204,12 @@ namespace AMESDanfossHMI
                 }
                 if (PLC.Output8) { btnPartRunOut.Background = Brushes.Green; }
                 else { btnPartRunOut.Background = StockColor; }
+                if (PLC.Input8)
+                {
+                    btnFumex.Background = Brushes.Green;
+                    //if (!PLC.Input15) { LabelFumexFilterAlarm.Content = "OK"; }
+                }
+                else { btnFumex.Background = StockColor; }
 
                 //txtboxBarcodeScan.Text = swAlarms.ElapsedMilliseconds.ToString() + ", " + i;
                 if (swAlarms.ElapsedMilliseconds > 1800)
@@ -213,73 +219,74 @@ namespace AMESDanfossHMI
                     lblStatus.Content = "";
                 }
 
-                if (!PLC.Input5 & nAlarmIndex == 0) //& swAlarms.ElapsedMilliseconds > 1500)
+                if (!PLC.Input5 & nAlarmIndex == 0)// & swAlarms.ElapsedMilliseconds > 1500)
                 {
                     //1
                     lblStatus.Content = "AutoStop";
                     nAlarmIndex = 1;
                     swAlarms.Restart();
                 }
-                if (!PLC.Input6 & nAlarmIndex < 2 & swAlarms.ElapsedMilliseconds > 1500)
+                if (!PLC.Input6 & nAlarmIndex < 2 & swAlarms.ElapsedMilliseconds > 1500 || !PLC.Input6 & nAlarmIndex == 0)
                 {
                     //2
                     lblStatus.Content = "E-Stop";
                     nAlarmIndex = 2;
                     swAlarms.Restart();
                 }
-                if (!PLC.Input7 & nAlarmIndex < 3 & swAlarms.ElapsedMilliseconds > 1500)
+                if (!PLC.Input7 & nAlarmIndex < 3 & swAlarms.ElapsedMilliseconds > 1500 || !PLC.Input7 & nAlarmIndex == 0)
                 {
                     //3
                     lblStatus.Content = "Check Air Pressure";
                     nAlarmIndex = 3;
                     swAlarms.Restart();
                 }
-                if (PLC.Input9 & nAlarmIndex < 4 & swAlarms.ElapsedMilliseconds > 1500)
+                if (PLC.Input9 & nAlarmIndex < 4 & swAlarms.ElapsedMilliseconds > 1500 || PLC.Input9 & nAlarmIndex == 0)
                 {
                     //4
                     lblStatus.Content = "Cylinder Error";
                     nAlarmIndex = 4;
                     swAlarms.Restart();
                 }
-                if (PLC.Input10 & nAlarmIndex < 5 & swAlarms.ElapsedMilliseconds > 1500)
+                if (PLC.Input10 & nAlarmIndex < 5 & swAlarms.ElapsedMilliseconds > 1500 || PLC.Input10 & nAlarmIndex == 0)
                 {
                     //5
                     lblStatus.Content = "Weber Label Error";
                     nAlarmIndex = 5;
                     swAlarms.Restart();
                 }
-                if (PLC.Input11 & nAlarmIndex < 6 & swAlarms.ElapsedMilliseconds > 1500)
+                if (PLC.Input11 & nAlarmIndex < 6 & swAlarms.ElapsedMilliseconds > 1500 || PLC.Input11 & nAlarmIndex == 0)
                 {
                     //6
                     lblStatus.Content = "Indexer Table Error";
                     nAlarmIndex = 6;
                     swAlarms.Restart();
                 }
-                if (PLC.Input12 & nAlarmIndex < 7 & swAlarms.ElapsedMilliseconds > 1500)
+                if (PLC.Input12 & nAlarmIndex < 7 & swAlarms.ElapsedMilliseconds > 1500 || PLC.Input12 & nAlarmIndex == 0)
                 {
                     //7
                     lblStatus.Content = "Rotary Table Error";
                     nAlarmIndex = 7;
                     swAlarms.Restart();
                 }
-                if (PLC.Input13 & nAlarmIndex < 8 & swAlarms.ElapsedMilliseconds > 1500)
+                if (PLC.Input13 & nAlarmIndex < 8 & swAlarms.ElapsedMilliseconds > 1500 || PLC.Input13 & nAlarmIndex == 0)
                 {
                     //8
                     lblStatus.Content = "Robot Error";
                     nAlarmIndex = 8;
                     swAlarms.Restart();
                 }
-                if (PLC.Input14 & nAlarmIndex < 9 & swAlarms.ElapsedMilliseconds > 1500)
+                if (PLC.Input14 & nAlarmIndex < 9 & swAlarms.ElapsedMilliseconds > 1500 || PLC.Input14 & nAlarmIndex == 0)
                 {
                     //9
                     lblStatus.Content = "Laser Error";
                     nAlarmIndex = 9;
                     swAlarms.Restart();
                 }
-                if (PLC.Input15 & nAlarmIndex < 10 & swAlarms.ElapsedMilliseconds > 1500)
+                if (PLC.Input15 & nAlarmIndex < 10 & swAlarms.ElapsedMilliseconds > 1500 || PLC.Input15 & nAlarmIndex == 0)
                 {
                     //10
                     LabelFumexFilterAlarm.Background = Brushes.Red;
+                    LabelFumexFilterAlarm.Content = "Error";
                     lblStatus.Content = "Fumex Filter Change";
                     nAlarmIndex = 10;
                     swAlarms.Restart();
@@ -557,6 +564,7 @@ namespace AMESDanfossHMI
         private void ButtonFumexFilter_Click_1(object sender, RoutedEventArgs e)
         {
             LabelFumexFilterAlarm.Background = Brushes.Green;
+            LabelFumexFilterAlarm.Content = "OK";
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)

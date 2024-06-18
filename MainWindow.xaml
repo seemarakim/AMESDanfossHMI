@@ -50,7 +50,7 @@
             <GroupBox Header="Barcode Scan:" Foreground="White" Margin="5">
                 <TextBox x:Name="txtboxBarcodeScan" />
             </GroupBox>
-            <Image Source="Logo2016NoBack.png" Stretch="Uniform"/>
+            <Image Source="Images\Logo2016NoBack.png" Stretch="Uniform"/>
             <GroupBox Header="Status:" Foreground="White">
                 <Label x:Name="lblStatus" Content="Status" Foreground="White" HorizontalAlignment="Center"/>
             </GroupBox>
