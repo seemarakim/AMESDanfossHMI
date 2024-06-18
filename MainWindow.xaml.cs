@@ -194,7 +194,7 @@ namespace AMESDanfossHMI
                     lblStatus.Content = "";
                 }
 
-                if (!PLC.Input5 & nAlarmIndex == 0 & swAlarms.ElapsedMilliseconds > 1500)
+                if (!PLC.Input5 & nAlarmIndex == 0) //& swAlarms.ElapsedMilliseconds > 1500)
                 {
                     //1
                     lblStatus.Content = "AutoStop";
@@ -260,6 +260,7 @@ namespace AMESDanfossHMI
                 if (PLC.Input15 & nAlarmIndex < 10 & swAlarms.ElapsedMilliseconds > 1500)
                 {
                     //10
+                    LabelFumexFilterAlarm.Background = Brushes.Red;
                     lblStatus.Content = "Fumex Filter Change";
                     nAlarmIndex = 10;
                     swAlarms.Restart();
@@ -522,6 +523,21 @@ namespace AMESDanfossHMI
         {
             if (!PLC.Output8) { PLC.Output8=true; }
             else { PLC.Output8=false; }
+        }
+
+        private void ToggleOperatorMode_Checked(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Op Mode");
+        }
+
+        private void ToggleOperatorMode_Unchecked(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("NonOp Mode");
+        }
+
+        private void ButtonFumexFilter_Click_1(object sender, RoutedEventArgs e)
+        {
+            LabelFumexFilterAlarm.Background = Brushes.Green;
         }
     }
 }

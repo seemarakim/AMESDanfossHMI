@@ -32,11 +32,12 @@
                 <GroupBox Header="Fumex Filter:" Foreground="White" Height="80" VerticalAlignment="Center" Margin="2">
                     <StackPanel>
                         <Label x:Name="LabelFumexFilterAlarm" Content="OK" Foreground="White" HorizontalAlignment="Center" Background="Green"/>
-                        <Button x:Name="ButtonFumexFilter" Content="Reset" Margin="5">
+                        <Button x:Name="ButtonFumexFilter" Content="Reset" Margin="5" Click="ButtonFumexFilter_Click_1">
                         </Button>
                     </StackPanel>
                 </GroupBox>
                 <Button x:Name="btnRoboIdle" Content="Robot IDLE Positon" Height="40" Width="120" Margin="2" HorizontalAlignment="Center" Click="btnRoboIdle_Click"/>
+                <ToggleButton x:Name="ToggleOperatorMode" Content="Operator Mode" Padding="12" Margin="2" Checked="ToggleOperatorMode_Checked" Unchecked="ToggleOperatorMode_Unchecked" Visibility="Collapsed"/>
             </StackPanel>
             
 
