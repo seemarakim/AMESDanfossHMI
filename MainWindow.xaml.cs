@@ -42,6 +42,7 @@ namespace AMESDanfossHMI
         public string[] sBarcVal;
         Stopwatch swBarc = new Stopwatch();
         public int nAlarmIndex = 0;
+        System.Windows.Forms.NotifyIcon notifyicon = new System.Windows.Forms.NotifyIcon();
 
         public MainWindow()
         {
@@ -53,6 +54,11 @@ namespace AMESDanfossHMI
         {
             try
             {
+                notifyicon.Text = "WorxUIDanfossAMES";
+                notifyicon.Icon = new System.Drawing.Icon("KEyView.ico");
+                notifyicon.DoubleClick += Notifyicon_Click;
+                notifyicon.Visible = true;
+                Worx2337.Visibility = Visibility.Collapsed;
                 StockColor = btnFumex.Background;
                 MainTimer.Tick += MainTimer_Tick;
                 MainTimer.Interval = TimeSpan.FromMilliseconds(2);
@@ -82,6 +88,9 @@ namespace AMESDanfossHMI
                 }
                 else
                 {
+                    Worx2337.WindowState = WindowState.Normal;
+                    Worx2337.Visibility = Visibility.Visible;
+                    Worx2337.Activate();
                     MessageBox.Show("PLC Connection Failed");
                     Environment.Exit(0);
                 }
@@ -92,15 +101,25 @@ namespace AMESDanfossHMI
                 //    BarcodePort.PortName = "COM" & Settings.Aplication._BarcodePort
                 //    'MessageBox.Show(SerialPortBarc1.PortName)
                 //    BarcodePort.Open()
-
             }
             catch (Exception ex)
             {
+                Worx2337.WindowState = WindowState.Normal;
+                Worx2337.Visibility = Visibility.Visible;
+                Worx2337.Activate();
                 MessageBox.Show(ex.Message);
                 Environment.Exit(0);
             }
         }
 
+        private void Notifyicon_Click(object sender, EventArgs e)
+        {
+            
+            Worx2337.WindowState = WindowState.Normal;
+            Worx2337.Visibility = Visibility.Visible;
+            Worx2337.Activate();
+          
+        }
 
         private void BarcPort_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
         {
@@ -538,6 +557,17 @@ namespace AMESDanfossHMI
         private void ButtonFumexFilter_Click_1(object sender, RoutedEventArgs e)
         {
             LabelFumexFilterAlarm.Background = Brushes.Green;
+        }
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            notifyicon.Dispose();
+        }
+
+        private void btnMinimizeToTray_Click(object sender, RoutedEventArgs e)
+        {
+            Worx2337.WindowState = WindowState.Minimized;
+            Worx2337.Visibility= Visibility.Collapsed;
         }
     }
 }

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AMESDanfossHMI"
         mc:Ignorable="d"
-        Title="Worx-2337" Height="250" Width="600" Background="Gray" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowStyle="SingleBorderWindow" Loaded="Window_Loaded">
+        x:Name ="Worx2337" Icon="Images/KEyView.ico" Title="Worx-2337" Height="250" Width="600" Background="Gray" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowStyle="SingleBorderWindow" Loaded="Window_Loaded" Closing="Window_Closing" WindowState="Minimized"> 
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -38,6 +38,7 @@
                 </GroupBox>
                 <Button x:Name="btnRoboIdle" Content="Robot IDLE Positon" Height="40" Width="120" Margin="2" HorizontalAlignment="Center" Click="btnRoboIdle_Click"/>
                 <ToggleButton x:Name="ToggleOperatorMode" Content="Operator Mode" Padding="12" Margin="2" Checked="ToggleOperatorMode_Checked" Unchecked="ToggleOperatorMode_Unchecked" Visibility="Collapsed"/>
+                <Button x:Name="btnMinimizeToTray" Content="MinimizeToTray" Padding="5" Click="btnMinimizeToTray_Click"/>
             </StackPanel>
             
 
